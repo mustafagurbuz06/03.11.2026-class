@@ -1,9 +1,5 @@
 # Maaş Tahmini Modelini Nasıl Geliştirdim
 
-Hocam, derste yaptığımız maaş tahmini çalışmasını aldım ve skoru yükseltmeye çalıştım. Aşağıda önce elimdeki çalışmanın ne yaptığını, sonra nerede sorun gördüğümü ve neyi değiştirdiğimi anlatıyorum.
-
-## Başlangıç noktası
-
 Veri setinde 6704 kişi var. Her biri için yaş, cinsiyet, eğitim, meslek, deneyim yılı ve maaş bilgisi bulunuyor. Amaç maaşı tahmin etmek.
 
 Derste yaptığımız notebook'ta (`class.ipynb`) sırasıyla şunlar vardı:
