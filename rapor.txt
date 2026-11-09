@@ -1,0 +1,17 @@
+Maaş Tahmini Ödevi — Rapor
+
+Derste kurduğumuz Linear Regression modeli R² = 0.666 vermişti. Amacım bu skoru artırmak ve farklı modelleri karşılaştırmaktı.
+
+Veriyi incelerken birkaç sorun buldum. Education Level'da aynı seviyeler farklı yazılmıştı (Bachelor's / Bachelor's Degree gibi), 
+bunları birleştirip Lise < Lisans < YL < Doktora sırasıyla kodladım. Job Title'a LabelEncoder ile rastgele numaralar verilmişti,
+bunun yerine one-hot encoding kullandım. Derste silinen Age'i geri ekledim, deneyimin karesini ve unvanlardan Senior/Junior/Manager/Director bilgisini de yeni özellik olarak ekledim. 
+Sadece bu değişikliklerle Linear Regression 0.666'dan 0.881'e çıktı.
+
+Sonra beş model denedim: Linear Regression 0.881, KNN 0.947, Gradient Boosting 0.953, Decision Tree 0.970, Random Forest 0.975. 5-fold cross-validation ile de sonuçlar tutarlı çıktı.
+
+Skorlar fazla yüksek gelince veriyi kontrol ettim ve satırların %73'ünün kopya olduğunu gördüm. Kopyalar hem train'e hem test'e düştüğü için modeller ezberliyordu. 
+Kopyaları silip tekrar ölçünce Random Forest 0.905, Gradient Boosting 0.903 ve Linear Regression 0.873 çıktı.
+Veri küçüldüğü için (~1790 satır) tek bir train/test ayrımı yerine cross-validation kullandım.
+
+Sonuç olarak gerçekçi skor ~0.90. Skordaki en büyük artış daha iyi bir model seçmekten değil, veriyi doğru temizleyip kodlamaktan geldi. 
+Eksik olarak hiperparametre ayarı yapmadım ve encoding'i train/test ayrımından önce uyguladım.
