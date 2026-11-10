@@ -42,9 +42,7 @@ Karşılaştırmanın adil olması için derste kullandığımız bölmeyi aynen
 |---|---|---|
 | Dersteki Linear Regression | 0.666 | 24.448 $ |
 | Aynı Linear Regression, sadece veriyi düzelttikten sonra | 0.839 | 15.339 $ |
-| Random Forest | 0.971 | 3.718 $ |
-| Gradient Boosting | 0.964 | 5.790 $ |
-| **Random Forest + Gradient Boosting (son model)** | **0.971** | **4.610 $** |
+| **Random Forest + Gradient Boosting (son model)** | **0.971** | **4.634 $** |
 
 Burada benim için en öğretici kısım ikinci satır oldu. Modeli hiç değiştirmeden, sadece veriyi düzgün hazırlayınca skor 0.67'den 0.84'e çıktı. Kalan artış ise doğrusal olmayan modele geçmekten geldi.
 
@@ -56,12 +54,22 @@ Bunu test etmek için **GroupKFold** kullandım. Bu yöntem aynı satırın büt
 
 | Model | GroupKFold R² |
 |---|---|
-| Dersteki Linear Regression | 0.653 |
-| Son model | 0.907 |
+| Dersteki Linear Regression | 0.656 |
+| Son model | 0.913 |
 
 Bu daha zor testte skor 0.97'den 0.91'e düşüyor, yani tekrar eden satırlar gerçekten biraz etki ediyormuş. Ama fark hâlâ çok büyük, bu yüzden iyileşmenin gerçek olduğunu düşünüyorum.
 
-Son model olarak tek başına Random Forest yerine ikisinin birleşimini seçmemin sebebi de bu test oldu. Normal test setinde ikisi neredeyse aynı çıktı. GroupKFold'da ise birleşik model daha iyiydi (0.907, Random Forest 0.898). Yani daha önce görmediği verilerde daha güvenilir.
+## Modeli nasıl seçtim
+
+Test verisine bakarak model seçersem test artık "hiç görülmemiş" veri olmaz ve skor iyimser çıkar. Bu yüzden adayları sadece eğitim verisinde, 5 katlı çapraz doğrulamayla (yine kopyaları aynı tarafta tutan GroupKFold ile) karşılaştırdım. Notebook'ta teste sadece en sonda, seçilen model için bir kez bakılıyor. Açık olmak gerekirse, çalışmanın ilk denemelerinde birkaç modelin test skoruna da bakmıştım; sonradan seçimi bu şekilde, sadece eğitim verisine dayanarak yeniden yaptım ve yine aynı model kazandı.
+
+| Aday | Eğitim verisinde CV R² |
+|---|---|
+| Random Forest | 0.888 |
+| Gradient Boosting | 0.889 |
+| **Random Forest + Gradient Boosting** | **0.898** |
+
+İki modelin birleşimi tek başlarına ikisinden de iyi çıktığı için onu seçtim.
 
 ## Çalıştırmak için
 
