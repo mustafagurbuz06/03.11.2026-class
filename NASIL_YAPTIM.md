@@ -31,8 +31,11 @@ Bu modelin sonucu **R² = 0.666**, ortalama hata da yaklaşık **24.448 $** idi.
 - Meslek isimlerindeki yazım hatasını düzelttim (`Juniour` → `Junior`).
 - Meslek adından kıdem bilgisini ayrı sütunlar olarak çıkardım. İsminde "Senior", "Junior" ya da "Manager/Director/Head" geçip geçmediğine baktım.
 - Meslekleri LabelEncoder yerine **TargetEncoder** ile kodladım. Bu yöntemde her meslek, eğitim verisindeki ortalama maaşıyla temsil ediliyor. Böylece meslek gerçekten anlamlı bir sayıya dönüşüyor. scikit-learn bunu kendi içinde çapraz doğrulamayla yaptığı için test verisinden bilgi sızmıyor.
+- Mesleği ayrıca **One-Hot** ile de kodladım (her meslek için ayrı bir 0/1 sütunu). Böylece model hem "bu meslek ortalama ne kazanıyor" bilgisini hem de mesleğin kendisini görüyor.
 - Yaşı geri ekledim. Ağaç tabanlı modeller birbiriyle ilişkili sütunlardan etkilenmiyor ve yaş biraz ek bilgi veriyor.
-- Model olarak **Random Forest** ve **Gradient Boosting** kullandım ve ikisinin tahminlerinin ortalamasını aldım (VotingRegressor). Random Forest'ta birçok ağaç bağımsız kurulup ortalaması alınıyor. Gradient Boosting'de ise her ağaç bir öncekinin hatasını düzeltmeye çalışıyor. İkisini birleştirmek daha dengeli sonuç verdi.
+- **İşe başlama yaşı** (`Start_Age` = yaş − deneyim) diye yeni bir sütun ekledim.
+- 350 $, 500 $ gibi açıkça hatalı maaşları (10.000 $ altı) **sadece eğitim verisinden** çıkardım. Test verisine dokunmadım, yani karşılaştırma hâlâ adil.
+- Model olarak **ExtraTrees** kullandım. Random Forest gibi çok sayıda karar ağacının ortalamasını alıyor; farkı, ağaçlardaki bölme noktalarını rastgele seçmesi. Bu onu kopya satırları ezberlemeye karşı biraz daha dayanıklı yapıyor. Random Forest, Gradient Boosting ve ikisinin ortalamasını da denedim; nasıl seçtiğimi aşağıda anlatıyorum.
 
 ## Sonuçlar
 
@@ -41,10 +44,10 @@ Karşılaştırmanın adil olması için derste kullandığımız bölmeyi aynen
 | Model | R² | Ortalama hata |
 |---|---|---|
 | Dersteki Linear Regression | 0.666 | 24.448 $ |
-| Aynı Linear Regression, sadece veriyi düzelttikten sonra | 0.839 | 15.339 $ |
-| **Random Forest + Gradient Boosting (son model)** | **0.971** | **4.634 $** |
+| Aynı Linear Regression, sadece veriyi düzelttikten sonra | 0.839 | 15.347 $ |
+| **ExtraTrees (son model)** | **0.977** | **2.760 $** |
 
-Burada benim için en öğretici kısım ikinci satır oldu. Modeli hiç değiştirmeden, sadece veriyi düzgün hazırlayınca skor 0.67'den 0.84'e çıktı. Kalan artış ise doğrusal olmayan modele geçmekten geldi.
+Ortalama hata %89 azaldı. Burada benim için en öğretici kısım ikinci satır oldu. Modeli hiç değiştirmeden, sadece veriyi düzgün hazırlayınca skor 0.67'den 0.84'e çıktı. Kalan artış ise doğrusal olmayan modele geçmekten geldi.
 
 ## Kendi sonucumu nasıl kontrol ettim
 
@@ -55,21 +58,22 @@ Bunu test etmek için **GroupKFold** kullandım. Bu yöntem aynı satırın büt
 | Model | GroupKFold R² |
 |---|---|
 | Dersteki Linear Regression | 0.656 |
-| Son model | 0.913 |
+| Son model | 0.919 |
 
-Bu daha zor testte skor 0.97'den 0.91'e düşüyor, yani tekrar eden satırlar gerçekten biraz etki ediyormuş. Ama fark hâlâ çok büyük, bu yüzden iyileşmenin gerçek olduğunu düşünüyorum.
+Bu daha zor testte skor 0.98'den 0.92'ye düşüyor, yani tekrar eden satırlar gerçekten biraz etki ediyormuş. Ama fark hâlâ çok büyük, bu yüzden iyileşmenin gerçek olduğunu düşünüyorum.
 
 ## Modeli nasıl seçtim
 
-Test verisine bakarak model seçersem test artık "hiç görülmemiş" veri olmaz ve skor iyimser çıkar. Bu yüzden adayları sadece eğitim verisinde, 5 katlı çapraz doğrulamayla (yine kopyaları aynı tarafta tutan GroupKFold ile) karşılaştırdım. Notebook'ta teste sadece en sonda, seçilen model için bir kez bakılıyor. Açık olmak gerekirse, çalışmanın ilk denemelerinde birkaç modelin test skoruna da bakmıştım; sonradan seçimi bu şekilde, sadece eğitim verisine dayanarak yeniden yaptım ve yine aynı model kazandı.
+Test verisine bakarak model seçersem test artık "hiç görülmemiş" veri olmaz ve skor iyimser çıkar. Bu yüzden adayları sadece eğitim verisinde, 5 katlı çapraz doğrulamayla (yine kopyaları aynı tarafta tutan GroupKFold ile) karşılaştırdım. Notebook'ta teste sadece en sonda, seçilen model için bir kez bakılıyor. Açık olmak gerekirse, çalışma sırasındaki denemelerde bazı modellerin test skoruna da bakmıştım; son seçimi ise bu şekilde, sadece eğitim verisine dayanarak yaptım.
 
 | Aday | Eğitim verisinde CV R² |
 |---|---|
-| Random Forest | 0.888 |
-| Gradient Boosting | 0.889 |
-| **Random Forest + Gradient Boosting** | **0.898** |
+| Gradient Boosting | 0.901 |
+| Random Forest | 0.906 |
+| Random Forest + Gradient Boosting | 0.911 |
+| **ExtraTrees** | **0.923** |
 
-İki modelin birleşimi tek başlarına ikisinden de iyi çıktığı için onu seçtim.
+ExtraTrees en iyi çıktığı için onu seçtim.
 
 ## Çalıştırmak için
 
