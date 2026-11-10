@@ -1,4 +1,64 @@
-data_science_env/
+
+# ==============================
+# Python
+# ==============================
 __pycache__/
 *.py[cod]
+*$py.class
+*.pyd
+
+# ==============================
+# Virtual Environments
+# ==============================
+.env/
+venv/
+.venv/
+env/
+ENV/
+data_science_env/
+
+# ==============================
+# Environment Variables / Secrets
+# ==============================
+.env
+.env.*
+!.env.example
+
+# ==============================
+# Jupyter Notebook
+# ==============================
 .ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# ==============================
+# IDE / Editor
+# ==============================
+.vscode/
+.idea/
+
+# ==============================
+# Python Build / Distribution
+# ==============================
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ==============================
+# Logs
+# ==============================
+*.log
+
+# ==============================
+# Operating System
+# ==============================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ==============================
+# Temporary Files
+# ==============================
+*.tmp
+*.bak
+*.swp
